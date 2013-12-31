@@ -16,13 +16,28 @@ make_boot_image()
 {
     ./release-tools/mkbootfs $RAMDISK_TMP_DIR > $BIN_DIR/ramdisk-$IMAGE_NAME.cpio
     ./release-tools/minigzip < $BIN_DIR/ramdisk-$IMAGE_NAME.cpio > $BIN_DIR/ramdisk-$IMAGE_NAME.img
-    ./release-tools/mkbootimg --cmdline "androidboot.hardware=qcom user_debug=31 zcache" --base $KERNEL_BASEADDRESS --pagesize 2048 --ramdisk_offset $KERNEL_RAMDISK_OFFSET --kernel $BIN_DIR/kernel --ramdisk $BIN_DIR/ramdisk-$IMAGE_NAME.img --output $BIN_DIR/$IMAGE_NAME.img
+    ./release-tools/mkbootimg --cmdline "androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3F" --base $KERNEL_BASEADDRESS --pagesize 2048 --ramdisk_offset $KERNEL_RAMDISK_OFFSET --kernel $BIN_DIR/kernel --ramdisk $BIN_DIR/ramdisk-$IMAGE_NAME.img --output $BIN_DIR/$IMAGE_NAME.img
     echo "  $BIN_DIR/$IMAGE_NAME.img"
     rm $BIN_DIR/ramdisk-$IMAGE_NAME.img
     rm $BIN_DIR/ramdisk-$IMAGE_NAME.cpio
     rm $BIN_DIR/kernel 
 }
 
+make_boot_dt_image()
+{
+	make dtc -f ./dtc.mk
+    ./release-tools/mkbootfs $RAMDISK_TMP_DIR > $BIN_DIR/ramdisk-$IMAGE_NAME.cpio
+    ./release-tools/minigzip < $BIN_DIR/ramdisk-$IMAGE_NAME.cpio > $BIN_DIR/ramdisk-$IMAGE_NAME.img
+
+	./release-tools/dtbTool -o $BIN_DIR/ramdisk-$IMAGE_NAME.dtb -s 1024 -p $OBJ_DIR/scripts/dtc/ $OBJ_DIR/arch/arm/boot/
+
+    ./release-tools/mkbootimg --cmdline "console=null androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3F" --base $KERNEL_BASEADDRESS --pagesize 2048 --ramdisk_offset $KERNEL_RAMDISK_OFFSET --tags_offset $KERNEL_TAGS_OFFSET --kernel $BIN_DIR/kernel --dt $BIN_DIR/ramdisk-$IMAGE_NAME.dtb --ramdisk $BIN_DIR/ramdisk-$IMAGE_NAME.img --output $BIN_DIR/$IMAGE_NAME.img
+    echo "  $BIN_DIR/$IMAGE_NAME.img"
+    rm $BIN_DIR/ramdisk-$IMAGE_NAME.img
+    rm $BIN_DIR/ramdisk-$IMAGE_NAME.cpio
+    rm $BIN_DIR/kernel 
+    rm $BIN_DIR/ramdisk-$IMAGE_NAME.dtb
+}
 make_odin3_image()
 {
     tar cf $BUILD_LOCALVERSION-$IMAGE_NAME-odin.tar $IMAGE_NAME.img

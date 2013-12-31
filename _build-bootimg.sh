@@ -84,7 +84,14 @@ mkdir -p $BIN_DIR
 cp $OBJ_DIR/arch/arm/boot/zImage $BIN_DIR/kernel
 
 # create boot image
+
+
+
+if [ "$KERNEL_SEPARATED_DT" = 'y' ]; then
+make_boot_dt_image
+else
 make_boot_image
+fi
 
 if [ "$USE_LOKI" = 'y' ]; then
   make_loki_image
