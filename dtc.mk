@@ -167,3 +167,7 @@ PHONY += kernel_config
 kernel_config: $(KERNEL_OUT)
 	$(MAKE) -C kernel O=../$(KERNEL_OUT) ARCH=arm CROSS_COMPILE=arm-eabi- msm8974_sec_defconfig VARIANT_DEFCONFIG=msm8974_sec_hltedcm_defconfig SELINUX_DEFCONFIG=selinux_defconfig SELINUX_LOG_DEFCONFIG=selinux_log_defconfig TIMA_DEFCONFIG=tima_defconfig
 
+PHONY += kernel_config_kdi
+kernel_config_kdi: $(KERNEL_OUT)
+	$(MAKE)  ARCH=arm CROSS_COMPILE=arm-eabi- msm8974_sec_defconfig VARIANT_DEFCONFIG=msm8974_sec_hltekdi_defconfig SELINUX_DEFCONFIG=selinux_defconfig SELINUX_LOG_DEFCONFIG=selinux_log_defconfig TIMA_DEFCONFIG=tima_defconfig
+
